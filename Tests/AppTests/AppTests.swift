@@ -12,4 +12,13 @@ final class AppTests: XCTestCase {
             XCTAssertEqual(res.body.string, "Hello, world!")
         })
     }
+    
+    func testUpdateSimulation() throws {
+        let simulation = Simulation()
+        let updatedSimulation = simulation.update(at: simulation.nextUpdateTime)
+        
+        XCTAssertGreaterThan(updatedSimulation.ticks, simulation.ticks, "ticks")
+        XCTAssertGreaterThan(updatedSimulation.nextUpdateTime, simulation.nextUpdateTime, "time")
+        
+    }
 }
