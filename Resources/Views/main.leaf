@@ -1,0 +1,31 @@
+#extend("template"):
+    #export("body"):
+        <h2>Welcome #(player.name)!</h2>
+        <img src="/images/ship_h150px.png" height="75" halign="left"/>
+        <p>Action points: #(player.actionPoints) / #(maxActionPoints)</p>
+        <p>Position: #(player.ship.position)</p>
+        <div class="row">
+            <div class="col-md">
+                <h3>Your command, Captain</h3>
+                <p>What do you want to do?</p>
+                <ul class="list-group">
+                    <li class="list-group-item"><a href="/command/1" class="btn btn-primary">Move Forward!</a></li>
+                    <li class="list-group-item"><a href="/command/2" class="btn btn-primary">Retreat!</a></li>
+                    <li class="list-group-item"><a href="/command/0" class="btn btn-secondary">Wait...</a></li>
+                </ul>
+            </div>
+            <div class="col-md-1">&nbsp;</div>
+            <div class="col-md">
+            <h3>Ship information</h3>
+                <p>This is your ship:</p>
+                <ul class="list-group">
+                    <li class="list-group-item">Armament: #(player.ship.armament)</li>
+                    <li class="list-group-item">Armor: #(player.ship.armor)</li>
+                    <li class="list-group-item">Thrust: #(player.ship.thrust)</li>
+                    <li class="list-group-item">Weight: #(player.ship.weight)</li>
+                    <li class="list-group-item">Speed: #(player.ship.speed)</li>
+                </ul>
+            </div>
+        </div>
+    #endexport
+#endextend

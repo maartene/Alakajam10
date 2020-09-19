@@ -21,4 +21,33 @@ final class AppTests: XCTestCase {
         XCTAssertGreaterThan(updatedSimulation.nextUpdateTime, simulation.nextUpdateTime, "time")
         
     }
+    
+    func testMoveShip() throws {
+        let MAX_STEPS = 10_000
+        var ship = Ship()
+        
+        var count = 0
+        while ship.position < 5.0 && count < MAX_STEPS {
+            ship = ship.move()
+            count += 1
+        }
+        
+        if count > MAX_STEPS {
+            XCTFail("Unable to reach destination in \(MAX_STEPS) steps.")
+            return
+        }
+        
+        print("Moved \(ship) to position in \(count) steps. Average speed: \(ship.speed)")
+    }
+    
+    func testSimulationUpdateIncreasesPlayerActionPoints() throws {
+        let simulation = Simulation()
+        XCTAssertLessThan(simulation.players.first!.actionPoints, PLAYER_MAX_ACTION_POINTS)
+        
+        let updatedSimulation = simulation.update(at: Date())
+        XCTAssertGreaterThan(updatedSimulation.players.first!.actionPoints, simulation.players.first!.actionPoints)
+        
+        
+        
+    }
 }

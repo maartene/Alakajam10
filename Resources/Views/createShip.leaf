@@ -1,0 +1,25 @@
+#extend("template"):
+    #export("body"):
+        <h2>Create your ship!</h2>
+        <img src="/images/ship_h150px.png" height="75" halign="left"/>
+        <div class="row">
+            <div class="col-md">
+                <h3>Customize your ship</h3>
+                <p>Remaining points: #(player.shipPoints)</p>
+                <ul class="list-group">
+                    <li class="list-group-item">Armament: <a href="/ship/remove/armament" class="btn btn-sm btn-secondary #if(player.ship.armament <= 0): disabled #endif">-</a> #(player.ship.armament) <a href="/ship/add/armament" class="btn btn-sm btn-secondary #if(player.shipPoints <= 0): disabled #endif">+</a></li>
+                    <li class="list-group-item">Armor: <a href="/ship/remove/armor" class="btn btn-sm btn-secondary #if(player.ship.armor <= 0): disabled #endif">-</a> #(player.ship.armor) <a href="/ship/add/armor" class="btn btn-sm btn-secondary #if(player.shipPoints <= 0): disabled #endif">+</a></li>
+                    <li class="list-group-item">Thrust: <a href="/ship/remove/thrust" class="btn btn-sm btn-secondary #if(player.ship.thrust <= 0): disabled #endif">-</a> #(player.ship.thrust) <a href="/ship/add/thrust" class="btn btn-sm btn-secondary #if(player.shipPoints <= 0): disabled #endif">+</a></li>
+                </ul>
+            </div>
+            <div class="col-md-1">&nbsp;</div>
+            <div class="col-md">
+            <h3>Result:</h3>
+                <ul class="list-group">
+                    <li class="list-group-item">Weight: #(player.ship.weight)</li>
+                    <li class="list-group-item">Speed: #(player.ship.speed)</li>
+                </ul>
+            </div>
+        </div>
+    #endexport
+#endextend

@@ -29,14 +29,102 @@ struct CreateSimulation: LifecycleHandler {
 
 
 func createFrontEndRoutes(_ app: Application) {
-    app.get("hello") { req -> String in
+    app.get("") { req -> String in
         "Hello, world!"
     }
     
-    app.get() { req -> String in
-        let updatedSimulation = app.simulation.update(at: Date())
-        print(updatedSimulation)
-        app.simulation = updatedSimulation
-        return "Update done!"
+    app.get("main") { req -> EventLoopFuture<View> in
+        struct MainContext: Content {
+            let player: Player
+            let maxActionPoints: Int
+        }
+        
+        guard let player = getPlayerFromSession(req, in: app.simulation) else {
+            throw Abort(.unauthorized, reason: "Not logged in.")
+        }
+        
+        // first check to see wether we can update
+        if app.simulation.canUpdate(at: Date()) {
+            var updatedSimulation = app.simulation
+            while updatedSimulation.canUpdate(at: Date()) {
+                updatedSimulation = updatedSimulation.update(at: Date())
+                print(updatedSimulation)
+            }
+        
+            app.simulation = updatedSimulation
+        }
+        
+        let mainContext = MainContext(player: player, maxActionPoints: PLAYER_MAX_ACTION_POINTS)
+        return req.view.render("main", mainContext)
     }
+    
+    // MARK: Create account/ship
+    app.get("create", "ship") { req -> EventLoopFuture<View> in
+        guard let player = getPlayerFromSession(req, in: app.simulation) else {
+            throw Abort(.unauthorized, reason: "Not logged in.")
+        }
+        
+        return req.view.render("createShip", ["player": player])
+    }
+    
+    app.get("ship", "add", ":stat") { req -> Response in
+        guard let statName = req.parameters.get("stat") else {
+            throw Abort(.badRequest, reason: "No valid string found for parameter 'stat'")
+        }
+        
+        guard let player = getPlayerFromSession(req, in: app.simulation) else {
+            throw Abort(.unauthorized, reason: "Not logged in.")
+        }
+        
+        let updatedPlayer = player.spendShipPoints(on: statName, amount: 1)
+        app.simulation.replace(updatedPlayer)
+        
+        return req.redirect(to: "/create/ship")
+    }
+    
+    app.get("ship", "remove", ":stat") { req -> Response in
+        guard let statName = req.parameters.get("stat") else {
+            throw Abort(.badRequest, reason: "No valid string found for parameter 'stat'")
+        }
+        
+        guard let player = getPlayerFromSession(req, in: app.simulation) else {
+            throw Abort(.unauthorized, reason: "Not logged in.")
+        }
+        
+        let updatedPlayer = player.spendShipPoints(on: statName, amount: -1)
+        app.simulation.replace(updatedPlayer)
+        
+        return req.redirect(to: "/create/ship")
+    }
+    
+    
+    // MARK: Player actions
+    
+    app.get("command", ":number") { req -> Response in
+        guard let numberString = req.parameters.get("number") else {
+            throw Abort(.badRequest, reason: "No valid string found for parameter 'number'")
+        }
+        
+        guard let number = Int(numberString) else {
+            throw Abort(.badRequest, reason: "\(numberString) is not a valid Integer")
+        }
+        
+        guard let command = GameCommand(rawValue: number) else {
+            throw Abort(.notFound, reason: "No command found for number \(number)")
+        }
+        
+        guard let player = getPlayerFromSession(req, in: app.simulation) else {
+            throw Abort(.unauthorized, reason: "Not logged in.")
+        }
+        
+        app.simulation = app.simulation.executeCommand(command, for: player)
+        
+        return req.redirect(to: "/main")
+    }
+    
+    
+}
+
+func getPlayerFromSession(_ req: Request, in simulation: Simulation) -> Player? {
+    simulation.players.first
 }
