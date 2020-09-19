@@ -1,17 +1,38 @@
 #extend("template"):
     #export("body"):
-        <h2>Welcome #(player.name)!</h2>
-        <img src="/images/ship_h150px.png" height="75" halign="left"/>
-        <p>Action points: #(player.actionPoints) / #(maxActionPoints)</p>
-        <p>Position: #(player.ship.position)</p>
-        <div class="row">
+        <h2 class="my-3">Welcome #(player.name)!</h2>
+        <p>The objective of this game is to reach the end of the race as fast as possible.</p>
+        <p>The race is seperated into five stints. After each stint, you can retool your ship.</p>
+        <p>Please be aware that the further you get into the race, the bigger the chance of meeting adversaries!</p>
+        <!--<img src="/images/ship_h150px.png" height="75" halign="left"/>-->
+        
+        
+        <!--<p>Position: #(player.ship.position)</p>-->
+        <h3 class="mt-5">Race progress</h3>
+        <div class="row my-3">
+            #for(stint in stints):
+            <div class="col">
+                Stint #(stint.stintID + 1): 
+                <div class="progress">
+                    #if(stint.stintID == 0): <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: #(stint.progress)%" aria-valuenow="#(stint.progress)" aria-valuemin="0" aria-valuemax="100"></div>#endif
+                    #if(stint.stintID == 1): <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: #(stint.progress)%" aria-valuenow="#(stint.progress)" aria-valuemin="0" aria-valuemax="100"></div>#endif
+                    #if(stint.stintID == 2): <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" role="progressbar" style="width: #(stint.progress)%" aria-valuenow="#(stint.progress)" aria-valuemin="0" aria-valuemax="100"></div>#endif
+                    #if(stint.stintID == 3): <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: #(stint.progress)%" aria-valuenow="#(stint.progress)" aria-valuemin="0" aria-valuemax="100"></div>#endif
+                    #if(stint.stintID == 4): <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" style="width: #(stint.progress)%" aria-valuenow="#(stint.progress)" aria-valuemin="0" aria-valuemax="100"></div>#endif
+                </div>
+            </div>
+            #endfor
+        </div>
+
+        <div class="row my-5">
             <div class="col-md">
                 <h3>Your command, Captain</h3>
+                <p>Action points: #(player.actionPoints) / #(maxActionPoints) (+1 Action Point per #(apDelay) minutes)</p>
                 <p>What do you want to do?</p>
                 <ul class="list-group">
-                    <li class="list-group-item"><a href="/command/1" class="btn btn-primary">Move Forward!</a></li>
-                    <li class="list-group-item"><a href="/command/2" class="btn btn-primary">Retreat!</a></li>
-                    <li class="list-group-item"><a href="/command/0" class="btn btn-secondary">Wait...</a></li>
+                    <li class="list-group-item"><a href="/command/1" class="btn btn-primary #if(player.actionPoints <= 0): disabled #endif">Move Forward!</a></li>
+                    <li class="list-group-item"><a href="/command/2" class="btn btn-primary #if(player.actionPoints <= 0): disabled #endif">Retreat!</a></li>
+                    <li class="list-group-item"><a href="/command/0" class="btn btn-secondary #if(player.actionPoints <= 0): disabled #endif">Wait...</a></li>
                 </ul>
             </div>
             <div class="col-md-1">&nbsp;</div>
@@ -25,6 +46,7 @@
                     <li class="list-group-item">Weight: #(player.ship.weight)</li>
                     <li class="list-group-item">Speed: #(player.ship.speed)</li>
                 </ul>
+                #if(player.shipPoints > 0):<div class="alert alert-info mt-3">You have unspent customizing points. <a href="/ship/customize" class="btn btn-info">Customize</a> your ship.</div>#endif
             </div>
         </div>
     #endexport

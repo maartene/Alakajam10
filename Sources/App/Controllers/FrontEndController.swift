@@ -37,8 +37,15 @@ func createFrontEndRoutes(_ app: Application) {
         struct MainContext: Content {
             let player: Player
             let maxActionPoints: Int
+            let apDelay: Int
+            let stints: [StintInfo]
         }
         
+        struct StintInfo: Codable {
+            let stintID: Int
+            let progress: Double
+        }
+ 
         guard let player = getPlayerFromSession(req, in: app.simulation) else {
             throw Abort(.unauthorized, reason: "Not logged in.")
         }
@@ -54,17 +61,28 @@ func createFrontEndRoutes(_ app: Application) {
             app.simulation = updatedSimulation
         }
         
-        let mainContext = MainContext(player: player, maxActionPoints: PLAYER_MAX_ACTION_POINTS)
+        let stints = (0 ..< 5).map { value -> StintInfo in
+            if player.ship.position > Double(value) {
+                let progress = (player.ship.position - Double(value)) * 100.0
+                return StintInfo(stintID: value, progress: min(100.0, progress))
+            } else {
+                return StintInfo(stintID: value, progress: 0)
+            }
+        }
+        
+        print(stints)
+        
+        let mainContext = MainContext(player: player, maxActionPoints: PLAYER_MAX_ACTION_POINTS, apDelay: Int(SIMULATION_NEXT_UPDATE_DELAY_MINUTES), stints: stints)
         return req.view.render("main", mainContext)
     }
     
-    // MARK: Create account/ship
-    app.get("create", "ship") { req -> EventLoopFuture<View> in
+    // MARK: Customize your ship
+    app.get("ship", "customize") { req -> EventLoopFuture<View> in
         guard let player = getPlayerFromSession(req, in: app.simulation) else {
             throw Abort(.unauthorized, reason: "Not logged in.")
         }
         
-        return req.view.render("createShip", ["player": player])
+        return req.view.render("customizeShip", ["player": player])
     }
     
     app.get("ship", "add", ":stat") { req -> Response in
@@ -79,7 +97,7 @@ func createFrontEndRoutes(_ app: Application) {
         let updatedPlayer = player.spendShipPoints(on: statName, amount: 1)
         app.simulation.replace(updatedPlayer)
         
-        return req.redirect(to: "/create/ship")
+        return req.redirect(to: "/ship/customize")
     }
     
     app.get("ship", "remove", ":stat") { req -> Response in
@@ -94,7 +112,7 @@ func createFrontEndRoutes(_ app: Application) {
         let updatedPlayer = player.spendShipPoints(on: statName, amount: -1)
         app.simulation.replace(updatedPlayer)
         
-        return req.redirect(to: "/create/ship")
+        return req.redirect(to: "/ship/customize")
     }
     
     

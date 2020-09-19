@@ -48,6 +48,12 @@ struct Player: Content {
             break
         }
         
+        if Int(changedPlayer.ship.position) - Int(ship.position) >= 1 {
+            // we went to a new stint!
+            print("New stint!")
+            changedPlayer.shipPoints += 1
+        }
+        
         changedPlayer.actionPoints -= 1
         
         return changedPlayer
