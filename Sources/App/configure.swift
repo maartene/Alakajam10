@@ -13,4 +13,10 @@ public func configure(_ app: Application) throws {
     
     // setup Leaf
     app.views.use(.leaf)
+    
+    // Setup custom tags
+    app.leaf.tags[DecimalTag.name] = DecimalTag()
+    app.leaf.tags[ZeroDecimalTag.name] = ZeroDecimalTag()
+    
+    app.middleware.use(app.sessions.middleware)
 }

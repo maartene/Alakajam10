@@ -6,6 +6,13 @@
         <p>Please be aware that the further you get into the race, the bigger the chance of meeting adversaries!</p>
         <!--<img src="/images/ship_h150px.png" height="75" halign="left"/>-->
         
+        <h3 class="mt-5">Messages:</h3>
+        #for(message in messages):
+            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+            #(message.message)
+            <a href="/dismiss/message/#(message.id)" class="close"><span aria-hidden="true">&times;</span></a>
+            </div>
+        #endfor
         
         <!--<p>Position: #(player.ship.position)</p>-->
         <h3 class="mt-5">Race progress</h3>
@@ -23,6 +30,7 @@
             </div>
             #endfor
         </div>
+        <h4>Sector: #(player.ship.sector) / #(sectors)</h4>
 
         <div class="row my-5">
             <div class="col-md">
@@ -32,7 +40,8 @@
                 <ul class="list-group">
                     <li class="list-group-item"><a href="/command/1" class="btn btn-primary #if(player.actionPoints <= 0): disabled #endif">Move Forward!</a></li>
                     <li class="list-group-item"><a href="/command/2" class="btn btn-primary #if(player.actionPoints <= 0): disabled #endif">Retreat!</a></li>
-                    <li class="list-group-item"><a href="/command/0" class="btn btn-secondary #if(player.actionPoints <= 0): disabled #endif">Wait...</a></li>
+                    <li class="list-group-item"><a href="/command/3" class="btn btn-primary #if(player.actionPoints <= 0): disabled #endif">Scan</a></li>
+                    <!--<li class="list-group-item"><a href="/command/0" class="btn btn-secondary #if(player.actionPoints <= 0): disabled #endif">Wait...</a></li>-->
                 </ul>
             </div>
             <div class="col-md-1">&nbsp;</div>

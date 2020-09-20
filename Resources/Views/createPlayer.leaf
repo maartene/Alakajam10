@@ -1,0 +1,16 @@
+#extend("template"):
+  #export("body"):
+    <h2>Create player</h2>
+  <div>
+    <form action="/create/player" method="POST">
+      <div class="form-group">
+          <label for="name">Character name</label>
+          <input type="text" class="form-control" id="text" name="name" required minlength="3" pattern="^[a-zA-Z0-9_ ]*$"/>
+          <small id="name" class="form-text text-muted">Required, minimum of three characters, letters, underscores and numbers only.</small>
+      </div>
+      <a href="/" type="cancel" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-success">Save</button>
+    </form>
+  </div>
+  #endexport
+#endextend

@@ -21,7 +21,7 @@ extension Simulation: StorageKey {
 
 struct CreateSimulation: LifecycleHandler {
     func willBoot(_ application: Application) throws {
-        let simulation = Simulation()
+        let simulation = Simulation(botCount: 10)
         application.simulation = simulation
         application.logger.info("Created new simulation with players: \(simulation.players)")
     }
@@ -29,8 +29,8 @@ struct CreateSimulation: LifecycleHandler {
 
 
 func createFrontEndRoutes(_ app: Application) {
-    app.get("") { req -> String in
-        "Hello, world!"
+    app.get("") { req -> EventLoopFuture<View> in
+        req.view.render("index")
     }
     
     app.get("main") { req -> EventLoopFuture<View> in
@@ -39,11 +39,18 @@ func createFrontEndRoutes(_ app: Application) {
             let maxActionPoints: Int
             let apDelay: Int
             let stints: [StintInfo]
+            let sectors: Int
+            let messages: [MessageInfo]
         }
         
         struct StintInfo: Codable {
             let stintID: Int
             let progress: Double
+        }
+        
+        struct MessageInfo: Codable {
+            let id: Int
+            let message: String
         }
  
         guard let player = getPlayerFromSession(req, in: app.simulation) else {
@@ -70,11 +77,48 @@ func createFrontEndRoutes(_ app: Application) {
             }
         }
         
-        print(stints)
-        
-        let mainContext = MainContext(player: player, maxActionPoints: PLAYER_MAX_ACTION_POINTS, apDelay: Int(SIMULATION_NEXT_UPDATE_DELAY_MINUTES), stints: stints)
+        let messages = player.messages.enumerated().map({ message in
+            MessageInfo(id: message.offset, message: message.element)
+        })
+                
+        let mainContext = MainContext(player: player, maxActionPoints: PLAYER_MAX_ACTION_POINTS, apDelay: Int(SIMULATION_NEXT_UPDATE_DELAY_MINUTES), stints: stints, sectors: app.simulation.sectorCountForStint(player.ship.stint), messages: messages)
         return req.view.render("main", mainContext)
     }
+    
+    // MARK: Create an account
+    app.get("create", "player") { req -> EventLoopFuture<View> in
+        req.view.render("createPlayer")
+    }
+    
+    app.post("create", "player") { req -> EventLoopFuture<View> in
+        struct CreateCharacterContext: Codable {
+            var errorMessage = "noError"
+            var uuid = "unknown"
+        }
+        let name: String = try req.content.get(at: "name")
+
+        var context = CreateCharacterContext()
+        
+        let player = Player(name: name, sector: (0 ..< app.simulation.sectorCountForStint(0)).randomElement() ?? 0)
+        app.simulation.players.append(player)
+        context.uuid = String(player.id)
+        
+        return req.view.render("userCreated", context)
+    }
+    
+    // MARK: Login
+    app.post("login") { req -> Response in
+        let idString: String = (try? req.content.get(at: "playerid")) ?? ""
+        
+        guard UUID(idString) != nil else {
+            print("\(idString) is not a valid user id")
+            return req.redirect(to: "/")
+        }
+        
+        req.session.data["playerID"] = idString
+        return req.redirect(to: "/main")
+    }
+    
     
     // MARK: Customize your ship
     app.get("ship", "customize") { req -> EventLoopFuture<View> in
@@ -140,9 +184,51 @@ func createFrontEndRoutes(_ app: Application) {
         return req.redirect(to: "/main")
     }
     
+    app.get("dismiss", "message", ":number") { req -> Response in
+        guard let numberString = req.parameters.get("number") else {
+            throw Abort(.badRequest, reason: "No valid string found for parameter 'number'")
+        }
+        
+        guard let number = Int(numberString) else {
+            throw Abort(.badRequest, reason: "\(numberString) is not a valid Integer")
+        }
+        
+        guard let player = getPlayerFromSession(req, in: app.simulation) else {
+            throw Abort(.unauthorized, reason: "Not logged in.")
+        }
+        
+        var changedPlayer = player
+        changedPlayer.messages.remove(at: number)
+        app.simulation.replace(changedPlayer)
+        
+        return req.redirect(to: "/main")
+    }
     
+    // MARK: DEBUG endpoints
+    app.get("debug", "allPlayers") { req -> [Player] in
+        app.simulation.players
+    }
+}
+
+func getPlayerIDFromSession(on req: Request) -> UUID? {
+    if req.hasSession, let playerID = req.session.data["playerID"] {
+        return UUID(playerID)
+    }
+    return nil
 }
 
 func getPlayerFromSession(_ req: Request, in simulation: Simulation) -> Player? {
-    simulation.players.first
+    //simulation.players.first
+    
+    guard let id = getPlayerIDFromSession(on: req) else {
+        req.logger.error("No ID found in session.")
+        return nil
+    }
+    
+    guard let player = simulation.players.first(where: {player in player.id == id }) else {
+        req.logger.error("No player with id \(id) found in simulation.")
+        return nil
+    }
+    
+    return player
 }

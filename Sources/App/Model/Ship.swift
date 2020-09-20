@@ -16,6 +16,7 @@ struct Ship: Content {
         case weight
         case speed
         case position
+        case sector
     }
     
     func encode(to encoder: Encoder) throws {
@@ -26,6 +27,7 @@ struct Ship: Content {
         try container.encode(weight, forKey: .weight)
         try container.encode(speed, forKey: .speed)
         try container.encode(position, forKey: .position)
+        try container.encode(sector, forKey: .sector)
     }
     
     var armament = 0
@@ -42,7 +44,12 @@ struct Ship: Content {
         Double(SHIP_BASE_SPEED + thrust * SHIP_THRUST_UNIT_SPEED) / Double(weight)
     }
     
+    var stint: Int {
+        Int(position)
+    }
+    
     var position: Double = 0
+    var sector: Int
     
     func move(backwards: Bool = false) -> Ship {
         var movedShip = self

@@ -24,7 +24,7 @@ final class AppTests: XCTestCase {
     
     func testMoveShip() throws {
         let MAX_STEPS = 10_000
-        var ship = Ship()
+        var ship = Ship(sector: 0)
         
         var count = 0
         while ship.position < 5.0 && count < MAX_STEPS {
@@ -49,5 +49,45 @@ final class AppTests: XCTestCase {
         
         
         
+    }
+    
+    func testCombat() throws {
+        var simulation = Simulation()
+        var player1 = Player(name: "player1", sector: 0)
+        player1.ship.armament = 1
+        player1.ship.position = 1.3
+        player1.ship.sector = 0
+        var player2 = Player(name: "player2", sector: 0)
+        player2.ship.armament = 1
+        player2.ship.position = 1.4
+        player2.ship.sector = 0
+        
+        simulation.players.append(player1)
+        simulation.players.append(player2)
+        
+        let combatResult = simulation.resolveCombat(player1: player1, player2: player2).players
+        print(combatResult)
+        
+        XCTAssertEqual(combatResult[1].ship.position == 0, combatResult[2].ship.position == 0)
+    }
+    
+    func testCombatFromStint() throws {
+        var simulation = Simulation()
+        var player1 = Player(name: "player1", sector: 0)
+        player1.ship.armament = 1
+        player1.ship.position = 1.3
+        player1.ship.sector = 0
+        var player2 = Player(name: "player2", sector: 0)
+        player2.ship.armament = 1
+        player2.ship.position = 1.4
+        player2.ship.sector = 0
+        
+        simulation.players.append(player1)
+        simulation.players.append(player2)
+        
+        let combatResult = simulation.processCombat(for: player1)
+        print(combatResult.players)
+        
+        XCTAssertEqual(combatResult.players[1].ship.position == 0, combatResult.players[2].ship.position == 0)
     }
 }
