@@ -21,7 +21,7 @@ extension Simulation: StorageKey {
 
 struct CreateSimulation: LifecycleHandler {
     func willBoot(_ application: Application) throws {
-        let simulation = Simulation(botCount: 10)
+        let simulation = Simulation(botCount: 15)
         application.simulation = simulation
         application.logger.info("Created new simulation with players: \(simulation.players)")
     }
@@ -61,7 +61,7 @@ func createFrontEndRoutes(_ app: Application) {
             var updatedSimulation = app.simulation
             while updatedSimulation.canUpdate(at: Date()) {
                 updatedSimulation = updatedSimulation.update(at: Date())
-                print(updatedSimulation)
+                //print(updatedSimulation)
             }
         
             app.simulation = updatedSimulation
@@ -204,9 +204,9 @@ func createFrontEndRoutes(_ app: Application) {
     }
     
     // MARK: DEBUG endpoints
-    app.get("debug", "allPlayers") { req -> [Player] in
+    /*app.get("debug", "allPlayers") { req -> [Player] in
         app.simulation.players
-    }
+    }*/
 }
 
 func getPlayerIDFromSession(on req: Request) -> UUID? {

@@ -98,7 +98,7 @@ struct Player: Content {
         }
         
         let scanResults = sortedByDistance.map { player -> Message in
-            let message = "SCAN RESULT: found ship: \(player.name) with \(player.ship.armament),\(player.ship.armor),\(player.ship.thrust) in sector: \(player.ship.stint) distance: \(abs(player.ship.position - ship.position))"
+            let message = "SCAN RESULT: found ship: \(player.name) with \(player.ship.armament),\(player.ship.armor),\(player.ship.thrust) in sector: \(player.ship.sector) position: \(player.ship.position) distance: \(abs(player.ship.position - ship.position))"
             return Message(timeStamp: ticks, message: message, severity: "info")
         }
         

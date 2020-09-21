@@ -20,10 +20,10 @@ struct Simulation: Content {
         for i in 0 ..< botCount {
             var bot = Player(name: "Bot \(i)")
             //bot.ship.armament = 0
-            bot.ship.position = Double.random(in: (0.5 ..< 4.5))
-            bot.ship.armor = bot.ship.stint > 2 ? 1 : 0
-            bot.ship.armament = bot.ship.stint > 3 ? 1 : 0
-            bot.ship.armament = bot.ship.stint > 4 ? 2 : 0
+            bot.ship.position = Double.random(in: (0.5 ..< 4.8))
+            bot.ship.armor = bot.ship.stint >= 2 ? 1 : 0
+            bot.ship.armament = bot.ship.stint >= 3 ? 1 : 0
+            bot.ship.armament = bot.ship.stint >= 4 ? 2 : 0
             players.append(bot)
         }
     }
@@ -84,7 +84,7 @@ struct Simulation: Content {
         var updatedSimulation = self
         if player.ship.stint > 0 && player.ship.stint < NUMBER_OF_STINTS {
             let otherPlayersInStint = players.filter { otherPlayer in
-                otherPlayer.id != player.id && otherPlayer.ship.stint == player.ship.stint
+                otherPlayer.id != player.id && otherPlayer.ship.stint == player.ship.stint && otherPlayer.ship.sector == player.ship.sector
             }
             
             // this should filter based on range
