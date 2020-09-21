@@ -179,13 +179,13 @@ func createFrontEndRoutes(_ app: Application) {
         return req.redirect(to: "/main")
     }
     
-    app.get("dismiss", "message", ":number") { req -> Response in
-        guard let numberString = req.parameters.get("number") else {
+    app.get("dismiss", "message", ":id") { req -> Response in
+        guard let idString = req.parameters.get("id") else {
             throw Abort(.badRequest, reason: "No valid string found for parameter 'number'")
         }
         
-        guard let number = Int(numberString) else {
-            throw Abort(.badRequest, reason: "\(numberString) is not a valid Integer")
+        guard let id = UUID(idString) else {
+            throw Abort(.badRequest, reason: "\(idString) is not a valid UUID")
         }
         
         guard let player = getPlayerFromSession(req, in: app.simulation) else {
@@ -193,7 +193,7 @@ func createFrontEndRoutes(_ app: Application) {
         }
         
         var changedPlayer = player
-        changedPlayer.messages.remove(at: number)
+        changedPlayer.messages.removeAll { $0.id == id }
         app.simulation.replace(changedPlayer)
         
         return req.redirect(to: "/main")
