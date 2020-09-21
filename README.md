@@ -17,7 +17,7 @@ Be careful: after the first stint, you can meet adversaries (you can SCAN for ot
 * No victory screen yet...
 
 ## Tech stuff
-* Application based on [Vapor 4](https://vapor.codes) (a server-side Swift framework for developing API's and fullstack applications)
-* Logo using Logoist 3
-* Docker image deployed to Digital Ocean
-* Find the source on [GitHub](https://github.com/maartene/Alakajam10)
+* Application based on [Vapor 4](https://vapor.codes) (a server-side Swift framework for developing API's and fullstack applications);
+* Logo using Logoist 3;
+* Docker image deployed to Digital Ocean;
+* Find the source on [GitHub](https://github.com/maartene/Alakajam10).

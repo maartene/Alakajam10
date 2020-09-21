@@ -75,6 +75,10 @@ func createFrontEndRoutes(_ app: Application) {
                 return StintInfo(stintID: value, progress: 0)
             }
         }
+        
+        if player.ship.stint >= NUMBER_OF_STINTS {
+            return req.view.render("victory", ["player": player])
+        }
                         
         let mainContext = MainContext(player: player, maxActionPoints: PLAYER_MAX_ACTION_POINTS, apDelay: Int(SIMULATION_NEXT_UPDATE_DELAY_MINUTES), stints: stints, sectors: app.simulation.sectorCountForStint(player.ship.stint))
         return req.view.render("main", mainContext)

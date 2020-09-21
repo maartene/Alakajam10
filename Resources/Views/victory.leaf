@@ -1,0 +1,9 @@
+#extend("template"):
+    #export("body"):
+        <h2 class="my-3">Welcome #(player.name)!</h2>
+        <p><img src="/images/Congratulations_2220px.png" width="100%"></p>
+        <p>You reached the finish line in #(player.ticks) steps.</p>
+        <p>To try again, create a new character <a href="/create/player">here</a>.</p>
+        <h3>Thanks for playing</h3>
+    #endexport
+#endextend
