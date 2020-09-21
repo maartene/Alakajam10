@@ -11,7 +11,7 @@
 </head>
 <body>
     <div class="container mt-3">
-        <p><a href="/"><img src="/images/logo_512px.png" alt="Move Zig!" width="256"></a></p>
+        <p><a href="/"><img src="/images/Logo_512px.png" alt="Move Zig!" width="256"></a></p>
             #import("body")
     </div>
      <div class="container p-3 mt-3 border-top">
