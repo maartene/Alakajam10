@@ -7,8 +7,8 @@
         <!--<img src="/images/ship_h150px.png" height="75" halign="left"/>-->
         
         <h3 class="mt-5">Messages:</h3>
-        #for(message in messages):
-            <div class="alert alert-primary alert-dismissible fade show" role="alert">
+        #for(message in player.messages):
+            <div class="alert alert-#(message.severity) alert-dismissible fade show" role="alert">
             #(message.message)
             <a href="/dismiss/message/#(message.id)" class="close"><span aria-hidden="true">&times;</span></a>
             </div>

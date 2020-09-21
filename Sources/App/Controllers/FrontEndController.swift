@@ -40,7 +40,6 @@ func createFrontEndRoutes(_ app: Application) {
             let apDelay: Int
             let stints: [StintInfo]
             let sectors: Int
-            let messages: [MessageInfo]
         }
         
         struct StintInfo: Codable {
@@ -76,12 +75,8 @@ func createFrontEndRoutes(_ app: Application) {
                 return StintInfo(stintID: value, progress: 0)
             }
         }
-        
-        let messages = player.messages.enumerated().map({ message in
-            MessageInfo(id: message.offset, message: message.element)
-        })
-                
-        let mainContext = MainContext(player: player, maxActionPoints: PLAYER_MAX_ACTION_POINTS, apDelay: Int(SIMULATION_NEXT_UPDATE_DELAY_MINUTES), stints: stints, sectors: app.simulation.sectorCountForStint(player.ship.stint), messages: messages)
+                        
+        let mainContext = MainContext(player: player, maxActionPoints: PLAYER_MAX_ACTION_POINTS, apDelay: Int(SIMULATION_NEXT_UPDATE_DELAY_MINUTES), stints: stints, sectors: app.simulation.sectorCountForStint(player.ship.stint))
         return req.view.render("main", mainContext)
     }
     

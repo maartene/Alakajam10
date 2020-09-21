@@ -115,8 +115,8 @@ struct Simulation: Content {
             
             // bump to different sector
             changedPlayer2.ship.sector = (sectorCountForCurrentStint + 1) % sectorCountForCurrentStint
-            changedPlayer2.messages.append("You took damage from \(changedPlayer1.name)'s ship.")
-            changedPlayer1.messages.append("You damaged \(changedPlayer2.name)'s ship.")
+            changedPlayer2.logMessage("You took damage from \(changedPlayer1.name)'s ship.", severity: "warning")
+            changedPlayer1.logMessage("You damaged \(changedPlayer2.name)'s ship.")
         }
         
         if player2.ship.armament > player1.ship.armor {
@@ -124,24 +124,24 @@ struct Simulation: Content {
             
             // bump to different sector
             changedPlayer1.ship.sector = (sectorCountForCurrentStint + 1) % sectorCountForCurrentStint
-            changedPlayer1.messages.append("You took damage from \(changedPlayer2.name)'s ship.")
-            changedPlayer2.messages.append("You damaged \(changedPlayer1.name)'s ship.")
+            changedPlayer1.logMessage("You took damage from \(changedPlayer2.name)'s ship.", severity: "warning")
+            changedPlayer2.logMessage("You damaged \(changedPlayer1.name)'s ship.")
         }
         
         if changedPlayer1.ship.armor < 0 {
             // player died
             changedPlayer1.ship = Ship(sector: (0..<sectorCountForStint0).randomElement() ?? 0)
             changedPlayer1.shipPoints = 3
-            changedPlayer1.messages.append("Your ship was destroyed, you can try again.")
-            changedPlayer2.messages.append("You destroyed \(changedPlayer1.name)'s ship.")
+            changedPlayer1.logMessage("Your ship was destroyed, you can try again.", severity: "danger")
+            changedPlayer2.logMessage("You destroyed \(changedPlayer1.name)'s ship.")
         }
         
         if changedPlayer2.ship.armor < 0 {
             // player died
             changedPlayer2.ship = Ship(sector: (0..<sectorCountForStint0).randomElement() ?? 0)
             changedPlayer2.shipPoints = 3
-            changedPlayer2.messages.append("Your ship was destroyed, you can try again.")
-            changedPlayer1.messages.append("You destroyed \(changedPlayer2.name)'s ship.")
+            changedPlayer2.logMessage("Your ship was destroyed, you can try again.", severity: "danger")
+            changedPlayer1.logMessage("You destroyed \(changedPlayer2.name)'s ship.")
         }
         
         var changedSimulation = self

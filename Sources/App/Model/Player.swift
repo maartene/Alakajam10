@@ -8,13 +8,21 @@
 import Foundation
 import Vapor
 
+struct Message: Codable {
+    let id = UUID()
+    let timeStamp: Int
+    let message: String
+    let severity: String
+}
+
 struct Player: Content {
     
     let id: UUID
     let name: String
     var ship: Ship
     var shipPoints = 3
-    var messages = [String]()
+    var messages = [Message]()
+    var ticks = 0
     
     private(set) var actionPoints = 10
     
@@ -60,6 +68,7 @@ struct Player: Content {
         }
         
         changedPlayer.actionPoints -= 1
+        changedPlayer.ticks += 1
         
         return changedPlayer
     }
@@ -79,7 +88,7 @@ struct Player: Content {
         return updatedPlayer
     }
     
-    func Scan(in simulation: Simulation) -> [String] {
+    func Scan(in simulation: Simulation) -> [Message] {
         let scannedPlayers = simulation.players.filter { player in
             player.id != id && abs(player.ship.position - ship.position) <= PLAYER_SCAN_DISTANCE
         }
@@ -88,14 +97,19 @@ struct Player: Content {
             abs(p1.ship.position - ship.position) < abs(p2.ship.position - ship.position)
         }
         
-        let scanResults = sortedByDistance.map { player in
-            "SCAN RESULT: found ship: \(player.name) with \(player.ship.armament),\(player.ship.armor),\(player.ship.thrust) in sector: \(player.ship.stint) distance: \(abs(player.ship.position - ship.position))"
+        let scanResults = sortedByDistance.map { player -> Message in
+            let message = "SCAN RESULT: found ship: \(player.name) with \(player.ship.armament),\(player.ship.armor),\(player.ship.thrust) in sector: \(player.ship.stint) distance: \(abs(player.ship.position - ship.position))"
+            return Message(timeStamp: ticks, message: message, severity: "info")
         }
         
         if scanResults.count > 0 {
             return scanResults
         } else {
-            return ["\(simulation.ticks): Scan returned no results"]
+            return [Message(timeStamp: ticks, message: "SCAN RESULT: No ships found in range.", severity: "info")]
         }
+    }
+    
+    mutating func logMessage(_ message: String, severity: String = "info") {
+        messages.append(Message(timeStamp: ticks, message: message, severity: severity))
     }
 }
