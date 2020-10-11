@@ -8,9 +8,6 @@ SPACE is a great place to RACE! So that's what we'll do. Customize your ship foc
 
 Be careful: after the first stint, you can meet adversaries (you can SCAN for other players). And the further you get, the bigger the chance of encounters. If you lose all your armor, you will need to try again.
 
-### [Playable build here](https://movezig-tvzsv.ondigitalocean.app)
-(The built will only be available a couple of weeks)
-
 ## Limitations
 * NO PERSISTENCE: application goes down, all data/progress is lost
 * To mitigate this time moves a lot faster (you should be able to win before MTBF kicks in)
